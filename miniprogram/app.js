@@ -1,15 +1,23 @@
 //app.js
 App({
-  onLaunch: function () {
-    
+  globalData: {
+    userId: ""
+  },
+  onLaunch: function() {
     if (!wx.cloud) {
-      console.error('请使用 2.2.3 或以上的基础库以使用云能力')
+      console.error("请使用 2.2.3 或以上的基础库以使用云能力");
     } else {
       wx.cloud.init({
         traceUser: true,
-      })
+        env: "blog-962265"
+      });
+      wx.cloud.callFunction({
+        name: "login",
+        complete: res => {
+          const user = res.result;
+          this.globalData.userId = user._id;
+        }
+      });
     }
-
-    this.globalData = {}
   }
-})
+});

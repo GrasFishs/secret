@@ -1,3 +1,6 @@
 {
-  "usingComponents": {}
+  "usingComponents": {},
+  "navigationBarTitleText":"秘密",
+  "navigationBarBackgroundColor":"#eee",
+  "enablePullDownRefresh":true
 }

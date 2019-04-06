@@ -11,6 +11,7 @@
 	"appid": "wx76d1f7c83e52024e",
 	"projectname": "blog",
 	"libVersion": "2.6.4",
+	"compileType": "miniprogram",
 	"condition": {
 		"search": {
 			"current": -1,

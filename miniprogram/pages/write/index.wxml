@@ -1,0 +1,13 @@
+<view class="container">
+  <view class="input" style="background-color:{{bg}}">
+    <textarea class="content" maxlength="140" value="{{content}}" bindinput="onContentChange"></textarea>
+  </view>
+  <view class="colors-container">
+    <view class="colors">
+      <view class="color" wx:for="{{bgs}}" wx:for-item="color" wx:key="index" style="background-color:{{color}}" data-color="{{color}}" bind:tap="onPick"></view>
+    </view>
+  </view>
+  <view class="float" bindtap="send">
+    <text class="iconfont icon-fasong"></text>
+  </view>
+</view>

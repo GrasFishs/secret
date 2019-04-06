@@ -3,7 +3,6 @@ const cloud = require("wx-server-sdk");
 
 cloud.init({ env: "blog-962265" });
 const db = cloud.database();
-const _ = db.command;
 // 云函数入口函数
 exports.main = async (event, context) => {
   const { userId, page, size } = event;
@@ -11,9 +10,26 @@ exports.main = async (event, context) => {
     .collection("secret")
     .skip((page - 1) * size)
     .limit(size)
-    .where({
-      userId: _.neq(userId)
-    })
     .get();
-  
+  for (const d of data) {
+    const secretId = d._id;
+    const [{ data: likes }, { total: commentCount }] = await Promise.all([
+      db
+        .collection("like")
+        .where({
+          secretId
+        })
+        .get(),
+      db
+        .collection("comment")
+        .where({
+          secretId
+        })
+        .count()
+    ]);
+    d.likeCount = likes.length;
+    d.liked = likes.filter(like => like.userId === userId).length > 0;
+    d.commentCount = commentCount;
+  }
+  return data;
 };

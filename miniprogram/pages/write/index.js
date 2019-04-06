@@ -31,13 +31,17 @@ Page({
   send() {
     if (this.data.content.length > 0) {
       wx.cloud.callFunction({
-        name:'send',
-        data:{
+        name: "send",
+        data: {
           userId: getApp().globalData.userId,
           content: this.data.content,
           bg: this.data.bg
+        },
+        success(res) {
+          wx.showToast({ title: "发送成功！", icon: "none" });
+          wx.navigateBack();
         }
-      })
+      });
     } else {
       wx.showToast({ title: "内容不能为空", icon: "none" });
     }

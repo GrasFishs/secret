@@ -8,7 +8,7 @@
         <view class="item">评论 {{secret.commentCount}}</view>
       </view>
       <view class="right">
-        <text class="iconfont icon-zan {{secret.liked?'active':'icon'}}" data-id="{{secret.id}}" bindtap="like"></text>
+        <text class="iconfont icon-zan {{secret.liked?'active':'icon'}}" data-id="{{secret.id}}" data-liked="{{secret.liked}}" bindtap="like"></text>
         <text decode="{{true}}">&nbsp;&nbsp;</text>
         <text class="iconfont icon-pinglun icon"></text>
       </view>

@@ -7,42 +7,53 @@ Page({
     size: 20
   },
   onLoad() {
-    this.setData({
-      secrets: this.getSecrets()
+    this.getSecrets(1, this.data.size).then(secrets => {
+      this.setData({ secrets });
     });
   },
-  getSecret() {
-    return {
-      id: this.data.secrets.length,
-      content: Math.random(),
-      bg: [
-        "#880e4f",
-        "#283593",
-        "#1565c0",
-        "#2e7d32",
-        "#ef6c00",
-        "#37474f",
-        "#212121"
-      ][Math.floor(Math.random() * 5)],
-      likeCount: Math.floor(Math.random() * 10),
-      commentCount: Math.floor(Math.random() * 10),
-      liked: Math.random() > 0.5
-    };
+  onShow() {
+    this.getSecrets(1, this.data.size).then(secrets => {
+      this.setData({ secrets });
+    });
   },
-  getSecrets() {
-    return Array.from({ length: 5 }).map(_ => this.getSecret());
+  getSecrets(page, size) {
+    return new Promise(resolve => {
+      wx.cloud.callFunction({
+        name: "secrets",
+        data: {
+          userId: app.globalData.userId,
+          page,
+          size
+        },
+        success: res => {
+          resolve(res.result);
+        }
+      });
+    });
   },
   like(e) {
-    const id = e.target.dataset.id;
-    this.setData({
-      secrets: this.data.secrets.map(secret =>
-        secret.id === id
-          ? {
-              ...secret,
-              liked: !secret.liked
-            }
-          : secret
-      )
+    const userId = app.globalData.userId;
+    const secretId = Number(e.target.dataset.id);
+    const type = JSON.parse(e.target.dataset.liked) ? 1 : 0;
+    wx.cloud.callFunction({
+      name: "like",
+      data: {
+        userId,
+        secretId,
+        type
+      },
+      success: () => {
+        this.setData({
+          secrets: this.data.secrets.map(secret =>
+            secret.id === id
+              ? {
+                  ...secret,
+                  liked: !secret.liked
+                }
+              : secret
+          )
+        });
+      }
     });
   },
   toWrite() {
@@ -50,24 +61,15 @@ Page({
   },
 
   onPullDownRefresh() {
-    wx.showNavigationBarLoading();
-    setTimeout(() => {
-      this.setData({
-        secrets: this.getSecrets()
-      });
-      wx.hideNavigationBarLoading();
-      wx.stopPullDownRefresh();
-    }, 3000);
+    this.getSecrets(1, this.data.size).then(secrets => {
+      this.setData({ secrets });
+    });
   },
   onReachBottom() {
-    wx.showNavigationBarLoading();
-    this.setData(
-      {
-        secrets: [...this.data.secrets, ...this.getSecrets()]
-      },
-      () => {
-        wx.hideNavigationBarLoading();
-      }
-    );
+    this.setData({ page: this.data.page }, () => {
+      this.getSecrets(this.data.page, this.data.size).then(secrets => {
+        this.setData({ secrets: [...this.data.secrets, ...secrets] });
+      });
+    });
   }
 });

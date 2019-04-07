@@ -9,9 +9,9 @@
 }
 
 .secret {
+  position:relative;
   margin: 15px;
   border-radius: 5px;
-  overflow: hidden;
   box-shadow: 0 2px 2px lightgray;
 }
 .secret:first-child {
@@ -19,6 +19,16 @@
 }
 .secret:last-child {
   margin-bottom: 0;
+}
+
+.secret .avatar{
+  position:absolute;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  left:50%;
+  transform: translateX(-50%);
+  top:-10px;
 }
 
 .secret .content {

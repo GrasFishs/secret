@@ -8,17 +8,27 @@ const db = cloud.database();
 exports.main = async (event, context) => {
   const { userId, secretId, type } = event;
   // 点赞
+  console.log(event);
   if (type === 0) {
     try {
-      db.collection("like").add({
+      await db.collection("like").add({
         data: {
           userId,
           secretId
         }
       });
-      return true;
+      await db
+        .collection("secret")
+        .where({
+          _id: secretId
+        })
+        .update({
+          data: {
+            likeCount: db.command.inc(1)
+          }
+        });
     } catch (err) {
-      return false;
+      throw err;
     }
   }
   //取消
@@ -31,9 +41,19 @@ exports.main = async (event, context) => {
           secretId
         })
         .remove();
+      await db
+        .collection("secret")
+        .where({
+          _id: secretId
+        })
+        .update({
+          data: {
+            likeCount: db.command.inc(-1)
+          }
+        });
       return true;
     } catch (err) {
-      return false;
+      throw err;
     }
   }
 };

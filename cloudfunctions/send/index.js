@@ -25,7 +25,9 @@ exports.main = async (event, context) => {
       userId,
       content,
       bg,
-      avatar
+      avatar,
+      likeCount: 0,
+      commentCount: 0
     }
   });
 };

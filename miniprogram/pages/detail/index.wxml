@@ -1,0 +1,35 @@
+<view class="page">
+  <view class="secret" wx:if="{{secret}}">
+    <image src="{{secret.avatar}}" class="avatar" />
+    <view class="content" style="background-color: {{secret.bg}}">{{secret.content}}</view>
+    <view class="info">
+      <view class="left">
+        <view class="item">赞 {{secret.likeCount}}</view>
+        <text decode="{{true}}">&nbsp;&nbsp;</text>
+        <view class="item">评论 {{secret.commentCount}}</view>
+      </view>
+      <view class="right">
+        <text class="iconfont icon-zan {{secret.liked?'active':'icon'}}" data-id="{{secret._id}}" data-liked="{{secret.liked}}" catchtap="like"></text>
+        <text decode="{{true}}">&nbsp;&nbsp;</text>
+        <text class="iconfont icon-pinglun icon" catchtap="input"></text>
+      </view>
+    </view>
+    <view class="comments" style="padding:{{comments.length>0?'10px 0 10px 10px':'0'}}">
+      <view class="comment" wx:for="{{comments}}" wx:for-item="comment" wx:key="index" data-id="{{comment._id}}" bindtap="onSelectComment">
+        <image class="comment-avatar" src="{{comment.avatar}}"></image>
+        <view class="comment-info" style="border-bottom:{{index === comments.length - 1? 'none':'1px solid #e2e2e2'}}">
+          <view class="date">{{comment.createdTIme}}</view>
+          <view class="comment-content">{{comment.content}}</view>
+          <view class="child-comment" wx:for="{{comment.children}}" wx:for-item="child" wx:for-index="i" wx:key="i">
+            <image class="child-avatar" src="{{child.avatar}}"></image>
+            <text class="child-content">{{child.content}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+<view class="form" style="bottom: {{height}}px">
+  <textarea adjust-position="{{false}}" show-confirm-bar="{{false}}" bindfocus="onFocus" bindblur="onBlur" focus="{{isFocus}}" placeholder="匿名评论" auto-height="{{true}}" maxlength="200" class="input" value="{{content}}" bindinput="onCommentChange" />
+  <view id="send" class="send" bindtap="send">发送</view>
+</view>

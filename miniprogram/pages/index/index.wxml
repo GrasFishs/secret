@@ -1,5 +1,6 @@
 <view class="secrets">
-  <view class="secret" wx:for="{{secrets}}" wx:for-item="secret" wx:key="index">
+  <view class="secret" wx:for="{{secrets}}" wx:for-item="secret" wx:key="index" data-index="{{index}}" bindtap="toDetail">
+    <image src="{{secret.avatar}}" class="avatar" />
     <view class="content" style="background-color: {{secret.bg}}">{{secret.content}}</view>
     <view class="info">
       <view class="left">
@@ -8,13 +9,13 @@
         <view class="item">评论 {{secret.commentCount}}</view>
       </view>
       <view class="right">
-        <text class="iconfont icon-zan {{secret.liked?'active':'icon'}}" data-id="{{secret.id}}" data-liked="{{secret.liked}}" bindtap="like"></text>
+        <text class="iconfont icon-zan {{secret.liked?'active':'icon'}}" data-index="{{index}}" data-liked="{{secret.liked}}" catchtap="like"></text>
         <text decode="{{true}}">&nbsp;&nbsp;</text>
         <text class="iconfont icon-pinglun icon"></text>
       </view>
     </view>
   </view>
-  <view class="float" bindtap="toWrite">
-    <text class="iconfont icon-pen"></text>
-  </view>
+</view>
+<view class="float" bindtap="toWrite">
+  <text class="iconfont icon-pen"></text>
 </view>

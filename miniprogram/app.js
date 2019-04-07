@@ -1,7 +1,8 @@
 //app.js
 App({
   globalData: {
-    userId: ""
+    userId: "",
+    secret: null
   },
   onLaunch: function() {
     if (!wx.cloud) {
@@ -13,7 +14,7 @@ App({
       });
       wx.cloud.callFunction({
         name: "login",
-        complete: res => {
+        success: res => {
           const user = res.result;
           this.globalData.userId = user._id;
         }

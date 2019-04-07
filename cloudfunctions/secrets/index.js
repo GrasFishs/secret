@@ -13,23 +13,14 @@ exports.main = async (event, context) => {
     .get();
   for (const d of data) {
     const secretId = d._id;
-    const [{ data: likes }, { total: commentCount }] = await Promise.all([
-      db
-        .collection("like")
-        .where({
-          secretId
-        })
-        .get(),
-      db
-        .collection("comment")
-        .where({
-          secretId
-        })
-        .count()
-    ]);
-    d.likeCount = likes.length;
-    d.liked = likes.filter(like => like.userId === userId).length > 0;
-    d.commentCount = commentCount;
+    const { total: liked } = await db
+      .collection("like")
+      .where({
+        secretId,
+        userId
+      })
+      .count();
+    d.liked = liked > 0;
   }
   return data;
 };

@@ -1,4 +1,7 @@
-<view class="secrets">
+<view class="notifications {{notifications.length > 0 ? '' : 'hide'}}" bindtap="toNotify">
+您有{{notifications.length}}条未读消息！
+</view>
+<view class="secrets" style="padding-top: {{notifications.length > 0? '40px':'15px'}}">
   <view class="secret" wx:for="{{secrets}}" wx:for-item="secret" wx:key="index" data-index="{{index}}" bindtap="toDetail">
     <image src="{{secret.avatar}}" class="avatar" />
     <view class="content" style="background-color: {{secret.bg}}">{{secret.content}}</view>

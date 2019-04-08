@@ -19,6 +19,7 @@ exports.main = async (event, context) => {
         secretId,
         userId
       })
+      .orderBy('createdTime', 'desc')
       .count();
     d.liked = liked > 0;
   }

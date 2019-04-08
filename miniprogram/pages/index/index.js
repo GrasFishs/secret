@@ -5,12 +5,49 @@ Page({
     secrets: [],
     page: 1,
     size: 20,
-    reachable: true
+    reachable: true,
+    notifications: []
   },
   onShow() {
+    this.getNotifications();
     this.getSecrets(1, this.data.size).then(secrets => {
       this.setData({ secrets });
     });
+  },
+  getNotifications() {
+    if (app.globalData.userId === "") {
+      wx.cloud
+        .callFunction({
+          name: "login"
+        })
+        .then(res => {
+          const user = res.result;
+          app.globalData.userId = user._id;
+          wx.cloud
+            .callFunction({
+              name: "notificationCount",
+              data: {
+                userId: user._id
+              }
+            })
+            .then(res => {
+              const notifications = res.result;
+              this.setData({ notifications });
+            });
+        });
+    } else {
+      wx.cloud
+        .callFunction({
+          name: "notificationCount",
+          data: {
+            userId: app.globalData.userId
+          }
+        })
+        .then(res => {
+          const notifications = res.result;
+          this.setData({ notifications });
+        });
+    }
   },
   getSecrets(page, size) {
     wx.showToast({
@@ -33,7 +70,7 @@ Page({
                 size
               },
               success: res => {
-                wx.hideToast()
+                wx.hideToast();
                 resolve(res.result);
               }
             });
@@ -50,7 +87,7 @@ Page({
             size
           },
           success: res => {
-            wx.hideToast()
+            wx.hideToast();
             resolve(res.result);
           }
         });
@@ -71,23 +108,31 @@ Page({
       data: {
         userId,
         secretId: secret._id,
-        type : secret.liked ? 1: 0
+        type: secret.liked ? 1 : 0
       },
       success: () => {
         wx.hideToast();
-        const index = this.data.secrets.findIndex(
-          secret => secret._id === secretId
-        );
-        const secret = this.data.secrets[index];
+        // 非自赞
+        if (!secret.liked && userId !== secret.userId) {
+          wx.cloud.callFunction({
+            name: "notify",
+            data: {
+              type: "like",
+              content: "",
+              secret
+            }
+          });
+        }
         this.setData(
           {
             [`secrets[${index}].liked`]: !secret.liked,
-            [`secrets[${index}].likeCount`]:
-              type === 1 ? secret.likeCount - 1 : secret.likeCount + 1
+            [`secrets[${index}].likeCount`]: secret.liked
+              ? secret.likeCount - 1
+              : secret.likeCount + 1
           },
           () => {
             wx.showToast({
-              title: type === 0 ? "点赞成功！" : "取消成功！",
+              title: secret.liked ? "取消成功" : "点赞成功!",
               icon: "none"
             });
           }
@@ -106,7 +151,14 @@ Page({
     app.globalData.secret = secret;
     wx.navigateTo({ url: "/pages/detail/index?secretId=" + secret._id });
   },
-
+  toNotify() {
+    const ids = this.data.notifications.map(({ _id }) => _id);
+    wx.navigateTo({
+      url:
+        "/pages/notify/index?ids=" +
+        JSON.stringify(ids)
+    });
+  },
   onPullDownRefresh() {
     this.getSecrets(1, this.data.size).then(secrets => {
       wx.stopPullDownRefresh();
@@ -115,7 +167,7 @@ Page({
   },
   onReachBottom() {
     if (this.data.reachable) {
-      this.setData({ page: this.data.page }, () => {
+      this.setData({ page: this.data.page + 1 }, () => {
         this.getSecrets(this.data.page, this.data.size).then(secrets => {
           if (secrets.length >= this.data.size) {
             this.setData({ secrets: [...this.data.secrets, ...secrets] });

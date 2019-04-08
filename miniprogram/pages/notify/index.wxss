@@ -1,0 +1,36 @@
+.page{
+  min-height: 100vh;
+  background: #eee;
+}
+
+.notifications{
+  padding: 15px 10px;
+  height: 100%;
+}
+
+.notification{
+  padding: 10px;
+  background: white;
+  margin: 10px 0;
+  font-size: 12px;
+  border-radius: 5px;
+  box-shadow: 0 2px 2px #33333320;
+}
+
+.notification:first-child{
+  margin-top: 0;
+}
+
+.content{
+  color: gray;
+}
+
+.secret{
+  margin-top: 10px;
+  font-size: 14px;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 5px;
+}

@@ -1,0 +1,12 @@
+<view class="page">
+  <view class="notifications">
+    <view class="notification" wx:for="{{notifications}}" wx:for-item="notify" wx:key="index" data-id="{{notify.secret._id}}" bindtap="toDetail">
+      <view class="content">
+        {{notify.type === 'like'?'ta点赞了你': notify.content}}
+      </view>
+      <view class="secret" style="background-color: {{notify.secret.bg}}">
+        {{notify.secret.content}}
+      </view>
+    </view>
+  </view>
+</view>

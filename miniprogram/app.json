@@ -1,5 +1,10 @@
 {
-  "pages": ["pages/index/index", "pages/write/index", "pages/detail/index"],
+  "pages": [
+    "pages/index/index",
+    "pages/notify/index",
+    "pages/write/index",
+    "pages/detail/index"
+  ],
   "window": {
     "backgroundColor": "#F6F6F6",
     "backgroundTextStyle": "light",

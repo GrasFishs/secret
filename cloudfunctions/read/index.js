@@ -6,16 +6,18 @@ const db = cloud.database();
 
 // 云函数入口函数
 exports.main = async (event, context) => {
-  const { userId, page, size } = event;
+  const { ids } = event;
   try {
-    const { data } = await db
+    return await db
       .collection("notification")
-      .skip((page - 1) * size)
-      .limit(size)
-      .where({ "secret.userId": userId })
-      .orderBy("createdTime", "desc")
-      .get();
-    return data;
+      .where({
+        _id: db.command.in(ids)
+      })
+      .update({
+        data: {
+          read: true
+        }
+      });
   } catch (err) {
     throw err;
   }

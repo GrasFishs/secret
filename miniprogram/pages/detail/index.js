@@ -25,9 +25,26 @@ Page({
     currentId: ""
   },
   onLoad(options) {
-    this.setData({ secret: app.globalData.secret });
     const id = options.secretId;
+    if (app.globalData.secret) {
+      this.setData({ secret: app.globalData.secret });
+    } else {
+      this.getSecret(id);
+    }
     this.getComments(id);
+  },
+  getSecret(secretId) {
+    wx.cloud
+      .callFunction({
+        name: "secret",
+        data: {
+          secretId
+        }
+      })
+      .then(res => {
+        this.setData({ secret: res.result });
+      })
+      .catch(console.error);
   },
   getComments(secretId) {
     wx.showToast({
@@ -61,8 +78,8 @@ Page({
   },
   like(e) {
     const userId = app.globalData.userId;
-    const secretId = e.target.dataset.id;
-    const type = JSON.parse(e.target.dataset.liked) ? 1 : 0;
+    const { secret } = this.data;
+    const type = secret.liked ? 1 : 0;
     wx.showToast({
       title: "加载中...",
       mask: true,
@@ -72,12 +89,22 @@ Page({
       name: "like",
       data: {
         userId,
-        secretId,
+        secretId: secret._id,
         type
       },
       success: () => {
         wx.hideToast();
-        const secret = this.data.secret;
+        // 非自赞
+        if (!secret.liked && userId !== secret.userId) {
+          wx.cloud.callFunction({
+            name: "notify",
+            data: {
+              type: "like",
+              content: "",
+              secret
+            }
+          });
+        }
         this.setData(
           {
             ["secret.liked"]: !secret.liked,
@@ -119,7 +146,6 @@ Page({
         type: this.data.currentId === "" ? 0 : 1,
         parentId: this.data.currentId
       };
-      console.log(comment);
       wx.cloud
         .callFunction({
           name: "comment",
@@ -127,6 +153,17 @@ Page({
         })
         .then(res => {
           wx.hideToast();
+          // 非自评
+          if (app.globalData.userId !== this.data.secret.userId) {
+            wx.cloud.callFunction({
+              name: "notify",
+              data: {
+                type: "comment",
+                content: this.data.content,
+                secret: this.data.secret
+              }
+            });
+          }
           wx.showToast({ title: "评论成功！", icon: "none" });
           this.setData({
             content: "",

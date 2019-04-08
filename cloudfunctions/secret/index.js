@@ -8,10 +8,11 @@ const db = cloud.database();
 exports.main = async (event, context) => {
   const { secretId } = event;
   try {
-    return await db
+    const { data } = await db
       .collection("secret")
       .doc(secretId)
       .get();
+    return data;
   } catch (err) {
     throw err;
   }
